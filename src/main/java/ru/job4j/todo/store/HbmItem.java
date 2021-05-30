@@ -61,8 +61,8 @@ public class HbmItem implements Store, AutoCloseable {
     }
 
     @Override
-    public Object delete(int id) {
-        return this.tx(
+    public void delete(int id) {
+        this.tx(
                 session -> {
                     Item item = new Item();
                     item.setId(id);

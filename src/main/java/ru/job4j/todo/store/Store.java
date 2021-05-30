@@ -14,5 +14,5 @@ public interface Store {
 
     Item findById(int id);
 
-    Object delete(int id);
+    void delete(int id);
 }
