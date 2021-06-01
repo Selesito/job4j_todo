@@ -27,7 +27,7 @@
         function show() {
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:8080/job4j_todo_war_exploded/item',
+                url: 'http://localhost:8080/job4j_todo_war_exploded/item.do',
                 dataType: 'json'
             }).done(function (data) {
                 let tbody = document.querySelector('tbody');
@@ -42,24 +42,29 @@
                     }
                     let tr = document.createElement('tr');
                     tr.setAttribute('id', e.id);
-                    let num = document.createElement('td');
+                    let done = document.createElement('td');
                     if (e.done === false) {
-                        num.innerHTML = '<form action="item" method="post">' +
-                            '<input type="hidden" class="form-control" id="desc" name="desc" value="' + e.description + '">' +
-                            '<input type="hidden" class="form-control" id="id" name="id" value="' + e.id + '">' +
+                        done.innerHTML = '<form action="item.do" method="post">' +
+                            '<input type="hidden" class="form-control" name="desc" value="' + e.description + '">' +
+                            '<input type="hidden" class="form-control" name="id" value="' + e.id + '">' +
+                            '<input type="hidden" class="form-control" name="idUser" value="' + e.user.id + '">' +
                             '<button style="background-color: Red" title="Выполнить!"><i class="fa fa-close"></i></button></form>';
                     } else {
-                        num.innerHTML = '<form action="delete" method="post">' +
-                            '<input type="hidden" class="form-control" id="id" name="id" value="' + e.id + '">' +
+                        done.innerHTML = '<form action="delete" method="post">' +
+                            '<input type="hidden" class="form-control" name="id" value="' + e.id + '">' +
+                            '<input type="hidden" class="form-control" name="idUser" value="' + e.user.id + '">' +
                             '<button style="background-color: Lime" title="Удалить!"><i class="fa fa-check" ></i></button></form>';
                     }
                     let desc = document.createElement('td');
                     desc.innerText = e.description;
                     let create = document.createElement('td');
                     create.innerText = e.created;
-                    tr.append(num);
+                    let author = document.createElement('td');
+                    author.innerText = e.user.name;
+                    tr.append(done);
                     tr.append(desc);
                     tr.append(create);
+                    tr.append(author);
                     tbody.append(tr);
                 });
             }).fail(function (err) {
@@ -75,12 +80,21 @@
         <h4>
             ToDo
         </h4>
+        <div>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" style="position: absolute; right: 30%" href="<%=request.getContextPath()%>/login.jsp">
+                        <i id="userName" class="fa fa-user" > <c:out value="${user.name}"/> | Авторизоваться</i></a>
+                </li>
+            </ul>
+        </div>
     </div>
     <div class="row">
-        <form action="/job4j_todo_war_exploded/item" method="post">
+        <form action="/job4j_todo_war_exploded/item.do" method="post">
             <div class="form-group">
                 <label for="desc">Описание задания</label>
                 <input type="text" required class="form-control" id="desc" name="desc" placeholder="Описание задания..." title="Описание задания..." >
+                <input type="hidden" class="form-control" id="idUser" name="idUser" value="<c:out value="${user.id}"/>">
             </div>
             <button type="submit" class="btn btn-success">Добавить новое задание!</button>
         </form>
@@ -91,21 +105,22 @@
     <div class="row">
         <div class="form-check pb-2">
             <input type="checkbox" class="form-check-input" id="showAll" name="showAll">
-            <label class="form-check-label" for="showAll">Показать все выполненые  </label>
+            <label class="form-check-label" for="showAll">Показать все выполненые</label>
         </div>
     </div>
     <div class="row">
         <div>
-            <i class="fa fa-times mr-3"> Не выполнено!</i>
-            <i class="fa fa-check mr-3"> Выполнено!</i>
+            <i class="fa fa-times mr-3">Не выполнено!</i>
+            <i class="fa fa-check mr-3">Выполнено!</i>
         </div>
     </div>
     <table class="table table-bordered">
         <thead>
         <tr>
             <th width="5%" style="text-align: center">Статус</th>
-            <th width="60%">Описание</th>
-            <th width="35%">Дата создания</th>
+            <th width="40%">Описание</th>
+            <th width="25%">Дата создания</th>
+            <th width="30%">Автор</th>
         </tr>
         </thead>
         <tbody id="table">

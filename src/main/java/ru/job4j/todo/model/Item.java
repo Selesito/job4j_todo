@@ -12,24 +12,35 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String description;
     private Timestamp created;
     private boolean done;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Item() {
     }
 
-    public Item(String description, boolean done) {
-        this.description = description;
-        this.done = done;
-        created = new Timestamp(new Date().getTime());
+    public static Item of(String description, boolean done, User user) {
+        Item item = new Item();
+        item.description = description;
+        item.done = done;
+        item.user = user;
+        item.created = new Timestamp(new Date().getTime());
+        return item;
     }
 
-    public Item(Integer id, String description, boolean done) {
-        this.id = id;
-        this.description = description;
-        created = new Timestamp(new Date().getTime());
-        this.done = done;
+    public static Item of(Integer id, String description, boolean done, User user) {
+        Item item = new Item();
+        item.id = id;
+        item.description = description;
+        item.done = done;
+        item.user = user;
+        item.created = new Timestamp(new Date().getTime());
+        return item;
     }
 
     public Integer getId() {
@@ -64,6 +75,14 @@ public class Item {
         this.done = done;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,11 +94,11 @@ public class Item {
         Item item = (Item) o;
         return done == item.done && Objects.equals(id, item.id)
                 && Objects.equals(description, item.description)
-                && Objects.equals(created, item.created);
+                && Objects.equals(created, item.created) && Objects.equals(user, item.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, created, done);
+        return Objects.hash(id, description, created, done, user);
     }
 }

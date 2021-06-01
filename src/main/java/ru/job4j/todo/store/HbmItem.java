@@ -7,7 +7,9 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.job4j.todo.model.Item;
+import ru.job4j.todo.model.User;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.function.Function;
 
@@ -86,5 +88,36 @@ public class HbmItem implements Store, AutoCloseable {
         } finally {
             session.close();
         }
+    }
+
+    @Override
+    public User addUser(User user) {
+        tx(session -> session.save(user));
+        return user;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return this.tx(
+                session -> {
+                    try {
+                        Query query = session.createQuery("from User where email = :email");
+                        query.setParameter("email", email);
+                        User user = (User) query.getSingleResult();
+                        System.out.println(user.getEmail());
+                        return user;
+                    } catch (Exception e) {
+                        return null;
+                    }
+
+                }
+        );
+    }
+
+    @Override
+    public User findByIdUser(int id) {
+        return this.tx(
+                session -> session.get(User.class, id)
+        );
     }
 }
