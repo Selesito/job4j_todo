@@ -19,9 +19,9 @@
 
         <mapping class="ru.job4j.todo.model.Item" />
         <mapping class="ru.job4j.todo.model.User" />
-        <mapping class="ru.job4j.mapping.tomany.Brand" />
-        <mapping class="ru.job4j.mapping.tomany.Model" />
         <mapping class="ru.job4j.mapping.manytomany.Author" />
         <mapping class="ru.job4j.mapping.manytomany.Book" />
+        <mapping class="ru.job4j.mapping.lazy.Brand" />
+        <mapping class="ru.job4j.mapping.lazy.Model" />
     </session-factory>
 </hibernate-configuration>
