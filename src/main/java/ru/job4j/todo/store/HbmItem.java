@@ -98,20 +98,17 @@ public class HbmItem implements Store, AutoCloseable {
 
     @Override
     public User findByEmail(String email) {
-        return this.tx(
-                session -> {
-                    try {
-                        Query query = session.createQuery("from User where email = :email");
-                        query.setParameter("email", email);
-                        User user = (User) query.getSingleResult();
-                        System.out.println(user.getEmail());
-                        return user;
-                    } catch (Exception e) {
-                        return null;
-                    }
-
-                }
-        );
+        User user = null;
+        try (Session session = sf.openSession()) {
+            session.beginTransaction();
+            Query query = session.createQuery("from User where email = :email");
+            query.setParameter("email", email);
+            if (!query.getResultList().isEmpty())  {
+                user = (User) query.getResultList().get(0);
+            }
+            session.getTransaction().commit();
+        }
+        return user;
     }
 
     @Override
