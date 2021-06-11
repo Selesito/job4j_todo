@@ -16,7 +16,10 @@ public class Item {
     private Integer id;
 
     private String description;
-    private Timestamp created;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
+
     private boolean done;
 
     @ManyToOne
@@ -34,17 +37,7 @@ public class Item {
         item.description = description;
         item.done = done;
         item.user = user;
-        item.created = new Timestamp(new Date().getTime());
-        return item;
-    }
-
-    public static Item of(Integer id, String description, boolean done, User user) {
-        Item item = new Item();
-        item.id = id;
-        item.description = description;
-        item.done = done;
-        item.user = user;
-        item.created = new Timestamp(new Date().getTime());
+        item.created = new Date(System.currentTimeMillis());
         return item;
     }
 
@@ -64,11 +57,11 @@ public class Item {
         this.description = description;
     }
 
-    public Timestamp getCreated() {
+    public Date getCreated() {
         return created;
     }
 
-    public void setCreated(Timestamp created) {
+    public void setCreated(Date created) {
         this.created = created;
     }
 
