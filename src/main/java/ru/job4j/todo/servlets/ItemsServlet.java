@@ -1,6 +1,8 @@
 package ru.job4j.todo.servlets;
 
+import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.json.JSONArray;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.HbmItem;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 public class ItemsServlet extends HttpServlet {
     @Override
@@ -19,11 +22,12 @@ public class ItemsServlet extends HttpServlet {
         String id = req.getParameter("id");
         String desc = req.getParameter("desc");
         int idUser = Integer.parseInt(req.getParameter("idUser"));
+        String[] cIds = req.getParameterValues("cIds");
         User user = HbmItem.instOf().findByIdUser(idUser);
         if (id != null) {
-            HbmItem.instOf().replace(Item.of(Integer.parseInt(id), desc, true, user));
+            HbmItem.instOf().replace(Integer.parseInt(id));
         } else {
-            HbmItem.instOf().add(Item.of(desc, false, user));
+            HbmItem.instOf().add(Item.of(desc, false, user), cIds);
         }
         resp.sendRedirect(req.getContextPath() + "/index.jsp");
     }

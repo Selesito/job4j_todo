@@ -6,10 +6,13 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -34,25 +37,35 @@ public class HbmItem implements Store, AutoCloseable {
     }
 
     @Override
-    public Item add(Item item) {
-        tx(session -> session.save(item));
+    public Item add(Item item, String[] ids) {
+        tx(session -> {
+            for (String id : ids) {
+                Category category = session.find(Category.class, Integer.parseInt(id));
+                item.addCity(category);
+            }
+            session.save(item);
+            return null;
+        });
         return item;
     }
 
     @Override
-    public boolean replace(Item item) {
+    public boolean replace(int id) {
         return tx(session -> {
-            session.update(item);
-            return true;
-        });
+                    final Query query = session.createQuery(
+                            "update Item set done=true where id=:id");
+                    query.setParameter("id", id);
+                    query.executeUpdate();
+                    return true;
+                }
+        );
     }
 
     @Override
     public List<Item> findAll() {
-        return this.tx(
-                session -> session.createQuery(
-                        "from ru.job4j.todo.model.Item").list()
-        );
+        return tx(session -> session.createQuery(
+                "select distinct i from Item i join fetch i.categories"
+        ).list());
     }
 
     @Override
@@ -116,5 +129,19 @@ public class HbmItem implements Store, AutoCloseable {
         return this.tx(
                 session -> session.get(User.class, id)
         );
+    }
+
+    public Collection<Category> allCategories() {
+        List<Category> rsl = new ArrayList<>();
+        try (Session session = sf.openSession()) {
+            session.beginTransaction();
+
+            rsl = session.createQuery("select c from Category c", Category.class).list();
+
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            sf.getCurrentSession().getTransaction().rollback();
+        }
+        return rsl;
     }
 }

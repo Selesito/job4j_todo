@@ -21,6 +21,7 @@
     <script>
         $(document).ready(function() {
             show();
+            loadCategories()
             setInterval ('show()',1000);
         });
 
@@ -55,21 +56,43 @@
                             '<input type="hidden" class="form-control" name="idUser" value="' + e.user.id + '">' +
                             '<button style="background-color: Lime" title="Удалить!"><i class="fa fa-check" ></i></button></form>';
                     }
+                    let categories = ""
+                    for (let cat of e.categories) {
+                        categories += cat.name + ' '
+                    }
                     let desc = document.createElement('td');
                     desc.innerText = e.description;
                     let create = document.createElement('td');
                     create.innerText = e.created;
+                    let category = document.createElement('td');
+                    category.innerText = categories;
                     let author = document.createElement('td');
                     author.innerText = e.user.name;
                     tr.append(done);
                     tr.append(desc);
                     tr.append(create);
+                    tr.append(category);
                     tr.append(author);
                     tbody.append(tr);
                 });
             }).fail(function (err) {
                 alert(err);
             });
+        }
+        function loadCategories() {
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:8080/job4j_todo_war_exploded/create.do',
+                dataType: 'json'
+            }).done(function (data) {
+                let categories = ""
+                for (let i = 0; i < data.length; i++) {
+                    categories += "<option value="+data[i]["id"]+">"
+                        + data[i]["name"]
+                        + "</option>>"
+                }
+                $('#cIds').html(categories)
+            })
         }
     </script>
     <title>ToDo</title>
@@ -92,9 +115,14 @@
     <div class="row">
         <form action="/job4j_todo_war_exploded/item.do" method="post">
             <div class="form-group">
-                <label for="desc">Описание задания</label>
+                <label for="desc">Описание задания!</label>
                 <input type="text" required class="form-control" id="desc" name="desc" placeholder="Описание задания..." title="Описание задания..." >
                 <input type="hidden" class="form-control" id="idUser" name="idUser" value="<c:out value="${user.id}"/>">
+            </div>
+            <div class="form-group">
+                <label for="desc">Выберите категорию!</label>
+                <select class="form-control" name="cIds" id="cIds" multiple required>
+                </select>
             </div>
             <button type="submit" class="btn btn-success">Добавить новое задание!</button>
         </form>
@@ -118,9 +146,10 @@
         <thead>
         <tr>
             <th width="5%" style="text-align: center">Статус</th>
-            <th width="40%">Описание</th>
+            <th width="25%">Описание</th>
             <th width="25%">Дата создания</th>
-            <th width="30%">Автор</th>
+            <th width="25%">Срочность</th>
+            <th width="20%">Автор</th>
         </tr>
         </thead>
         <tbody id="table">

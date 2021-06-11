@@ -1,15 +1,17 @@
 package ru.job4j.todo.store;
 
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface Store {
 
-    Item add(Item item);
+    Item add(Item item, String[] ids);
 
-    boolean replace(Item item);
+    boolean replace(int id);
 
     List<Item> findAll();
 
@@ -22,4 +24,6 @@ public interface Store {
     User findByEmail(String email);
 
     User findByIdUser(int id);
+
+    Collection<Category> allCategories();
 }

@@ -36,6 +36,14 @@
     <servlet-name>RegServlet</servlet-name>
     <url-pattern>/reg</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>CreateServlet</servlet-name>
+    <servlet-class>ru.job4j.todo.servlets.CreateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CreateServlet</servlet-name>
+    <url-pattern>/create.do</url-pattern>
+  </servlet-mapping>
   <filter>
     <filter-name>AuthFilter</filter-name>
     <filter-class>ru.job4j.todo.filter.AuthFilter</filter-class>
